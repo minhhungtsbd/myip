@@ -7,7 +7,6 @@ Giao diện HTML, CSS và JavaScript chạy trên Cloudflare Pages. API chạy b
 - Cờ được phục vụ trực tiếp từ Pages. Bộ [flag-icons](https://github.com/lipis/flag-icons) 7.3.2 có giấy phép MIT trong `site/flags/LICENSE.txt`, gồm toàn bộ mã ISO 3166-1 alpha-2 và một số mã bổ sung.
 - WebRTC dùng Google STUN khi người dùng bấm chạy. Trình duyệt có thể giới hạn kết quả STUN, và phép kiểm tra chỉ so sánh địa chỉ cùng phiên bản IP.
 - `/dns-leak/` tạo phiên đo qua API dnsleak.dev. Trình duyệt gửi truy vấn thử cho các tên miền dùng một lần, rồi Pages lấy danh sách resolver quan sát được. Vị trí là ước tính và kết quả chỉ phản ánh trình duyệt trong phiên đó.
-- `/proxy-check/` cung cấp công cụ PowerShell cho Windows dùng curl để tự thử HTTP CONNECT, HTTPS hoặc SOCKS5. Công cụ đưa thông tin xác thực vào stdin của curl và kiểm tra qua một URL HTTPS cố định của MyIP. Chạy `./check-proxy.ps1 -ValidateOnly` để kiểm tra xử lý định dạng đầu vào.
 - `GET /api/me` trả dữ liệu kết nối từ Cloudflare. `GET /api/lookup?ip=...` trả kết quả theo từng nguồn. `GET /api/health` dùng để kiểm tra phiên bản đang phục vụ.
 
 ## Phát triển và triển khai
