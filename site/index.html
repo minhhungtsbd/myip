@@ -22,11 +22,12 @@
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="/style.css">
   <script type="module" src="/app.js"></script>
+  <script type="module" src="/dns-leak/dns.js"></script>
 </head>
 <body data-page="home">
   <header class="site-bar"><div class="wrap nav">
     <a class="brand" href="/" aria-label="Cloudmini MyIP"><img class="brand-mark" src="/favicon.svg" alt="" width="36" height="36"><span class="brand-wordmark">MyIP <span class="brand-product">Cloudmini</span></span></a>
-    <nav aria-label="Điều hướng"><a href="/" aria-current="page">IP của tôi</a><a href="/ip-lookup/">Tra cứu IP ↗</a><a href="/dns-leak/">DNS Leak</a></nav>
+    <nav aria-label="Điều hướng"><a href="/" aria-current="page">IP của tôi</a><a href="/ip-lookup/">Tra cứu IP ↗</a><a href="#dns-leak">DNS Leak</a></nav>
   </div></header>
   <main class="wrap">
     <div class="intro"><h1>Thông tin kết nối</h1>
@@ -56,6 +57,23 @@
       <div class="section-top"><h2 id="diagnostics-title">Kiểm tra WebRTC</h2><button class="minor" id="run-webrtc">Chạy kiểm tra</button></div>
       <p class="footnote">Dùng máy chủ STUN của Google để kiểm tra xem việc gọi trực tiếp từ trình duyệt có lộ IP khác với IP hiển thị ở trên hay không.</p>
       <p class="status" id="webrtc-status" role="status"></p>
+    </section>
+    <section class="panel diagnostics" id="dns-leak" aria-labelledby="dns-title">
+      <div class="section-top">
+        <h2 id="dns-title">DNS Leak Test</h2>
+        <button class="minor" id="run-dns" type="button">Chạy kiểm tra DNS</button>
+      </div>
+      <p class="footnote">Xem máy chủ DNS mà trình duyệt đang sử dụng và đối chiếu với nhà cung cấp DNS hoặc VPN bạn đã chọn. Phép đo sử dụng <a href="https://dnsleak.dev/">dnsleak.dev</a>.</p>
+      <p id="dns-status" class="status" role="status"></p>
+      <div id="dns-results" hidden>
+        <div class="table-shell" role="region" tabindex="0" aria-label="Máy chủ DNS phát hiện được">
+          <table>
+            <thead><tr><th scope="col">IP resolver</th><th scope="col">Nhà cung cấp</th><th scope="col">Vị trí ước tính</th></tr></thead>
+            <tbody id="dns-rows"></tbody>
+          </table>
+        </div>
+        <p class="footnote">Một nhà cung cấp có thể dùng nhiều IP resolver. Kết quả phản ánh trình duyệt trong lần đo này.</p>
+      </div>
     </section>
   </main>
   <footer class="wrap site-footer"><span>Cloudmini MyIP · Dữ liệu IP từ <a href="https://www.ip2location.io/">IP2Location.io</a> và <a href="https://ipinfo.io/">IPinfo</a></span><span>Tiện ích miễn phí từ <a href="https://cloudmini.net/">Cloudmini</a> · <a href="https://cloudmini.net/price/">VPS</a> · <a href="https://cloudmini.net/proxy/">Proxy</a></span></footer>
