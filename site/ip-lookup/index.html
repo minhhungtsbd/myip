@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10191b">
+  <meta name="description" content="Tra cứu IPv4 và IPv6, so sánh vị trí địa lý, ISP và ASN giữa nhiều nguồn dữ liệu.">
+  <title>Tra cứu IP đa nguồn · Cloudmini MyIP</title>
+  <link rel="canonical" href="https://myip.cloudmini.net/ip-lookup/">
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body data-page="lookup">
+  <header class="site-bar"><div class="wrap nav">
+    <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">⌁</span> Cloudmini<span class="brand-product">MyIP</span></a>
+    <nav aria-label="Điều hướng"><a href="/">IP của tôi</a><a href="/ip-lookup/" aria-current="page">Tra cứu IP ↗</a></nav>
+  </div></header>
+  <main class="wrap">
+    <div class="intro"><p class="eyebrow"><span class="dot"></span> ĐỊNH VỊ ĐA NGUỒN</p><h1>Tra cứu IP<span>.</span></h1>
+      <p>Đối chiếu vị trí, nhà mạng và ASN của cùng một địa chỉ IPv4 hoặc IPv6.</p></div>
+    <form class="search" action="/ip-lookup/" method="get"><label for="query">Địa chỉ IP</label><div class="search-row">
+      <input id="query" name="query" type="search" autocomplete="off" spellcheck="false" required maxlength="45" placeholder="Ví dụ: 185.139.214.144 hoặc 2606:4700::1111">
+      <button class="primary">Tra cứu <span aria-hidden="true">→</span></button>
+    </div><button class="text-button" id="use-my-ip" type="button">Dùng IP của tôi</button></form>
+    <p id="lookup-status" role="status" class="status"></p>
+    <div id="results" hidden>
+      <section class="panel details" aria-labelledby="result-ip">
+        <div class="eyebrow" id="result-version"></div><h2 class="result-ip" id="result-ip"></h2>
+        <dl id="details" class="facts"></dl>
+        <p class="footnote" id="detail-source"></p>
+      </section>
+      <section class="panel map-panel" id="map-panel" hidden>
+        <div class="section-top"><h2>Bản đồ vị trí ước tính</h2><button id="show-map" class="minor" type="button">Hiển thị bản đồ</button></div>
+        <p class="footnote" id="coordinates"></p><div id="map"></div>
+      </section>
+      <section aria-labelledby="sources-title" class="source-section">
+        <div class="section-top"><h2 id="sources-title">Đối chiếu nguồn dữ liệu</h2><span id="sources-count"></span></div>
+        <p class="footnote">Các nguồn có thể trả về vị trí khác nhau do cách xác định và thời điểm cập nhật dữ liệu.</p>
+        <div class="table-shell" tabindex="0" role="region" aria-label="Bảng đối chiếu nguồn dữ liệu"><table>
+          <thead><tr><th scope="col">Nguồn</th><th scope="col">Vị trí</th><th scope="col">ISP / Tổ chức</th><th scope="col">ASN</th></tr></thead><tbody id="sources"></tbody>
+        </table></div>
+      </section>
+    </div>
+  </main>
+  <footer class="wrap site-footer"><span>Cloudmini MyIP</span><span>Tiện ích miễn phí từ <a href="https://cloudmini.net/">Cloudmini</a> · <a href="https://cloudmini.net/price/">VPS</a> · <a href="https://cloudmini.net/proxy/">Proxy</a></span></footer>
+</body>
+</html>

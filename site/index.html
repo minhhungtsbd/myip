@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10191b">
+  <meta name="description" content="Xem địa chỉ IP công khai, vị trí, ISP, ASN và thông tin kết nối của bạn với Cloudmini MyIP.">
+  <title>IP của tôi · Cloudmini MyIP</title>
+  <link rel="canonical" href="https://myip.cloudmini.net/">
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body data-page="home">
+  <header class="site-bar"><div class="wrap nav">
+    <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">⌁</span> Cloudmini<span class="brand-product">MyIP</span></a>
+    <nav aria-label="Điều hướng"><a href="/" aria-current="page">IP của tôi</a><a href="/ip-lookup/">Tra cứu IP ↗</a></nav>
+  </div></header>
+  <main class="wrap">
+    <div class="intro"><p class="eyebrow"><span class="dot"></span> THÔNG TIN KẾT NỐI</p><h1>IP của bạn<span>.</span></h1>
+      <p>Kiểm tra địa chỉ IP công khai, vị trí ước tính và nhà mạng của kết nối hiện tại.</p></div>
+    <section class="overview" aria-label="Tổng quan">
+      <article class="identity"><div class="radar-art" aria-hidden="true"><i></i><i></i><i></i><b></b></div>
+        <div class="identity-content">
+          <div class="identity-label"><span>ĐỊA CHỈ IP CÔNG KHAI</span><span class="chip" id="version" hidden></span></div>
+          <div class="ip-row"><strong id="current-ip">Đang xác định…</strong><button id="copy" class="minor" disabled>Sao chép</button></div>
+          <p id="current-location" class="location" role="status">Đang đọc thông tin từ Cloudflare…</p>
+          <a class="inline-link" id="compare" href="/ip-lookup/">Đối chiếu vị trí theo nguồn <span aria-hidden="true">↗</span></a>
+        </div>
+      </article>
+      <article class="panel"><div class="eyebrow">TÍN HIỆU IP</div><h2>Phân loại kết nối</h2>
+        <dl id="signals" class="signals"></dl><p class="footnote" id="signal-note">Đang tải dữ liệu phân loại…</p>
+      </article>
+    </section>
+    <form class="search" action="/ip-lookup/" method="get"><label for="query">Tra cứu IP khác</label><div class="search-row">
+      <input id="query" name="query" type="search" inputmode="text" autocomplete="off" spellcheck="false" required maxlength="45" placeholder="Ví dụ: 185.139.214.144 hoặc 2606:4700::1111">
+      <button class="primary">Tra cứu <span aria-hidden="true">→</span></button>
+    </div></form>
+    <section aria-labelledby="network-title"><div class="section-top"><h2 id="network-title">Chi tiết kết nối</h2><span>Dữ liệu từ Cloudflare và trình duyệt</span></div>
+      <dl class="facts" id="network"></dl>
+    </section>
+  </main>
+  <footer class="wrap site-footer"><span>Cloudmini MyIP</span><span>Tiện ích miễn phí từ <a href="https://cloudmini.net/">Cloudmini</a> · <a href="https://cloudmini.net/price/">VPS</a> · <a href="https://cloudmini.net/proxy/">Proxy</a></span></footer>
+</body>
+</html>

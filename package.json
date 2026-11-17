@@ -1,0 +1,12 @@
+{
+  "name": "cloudmini-myip",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler pages dev site",
+    "deploy": "wrangler pages deploy site --project-name cloudmini-myip --branch main"
+  },
+  "devDependencies": {
+    "wrangler": "4.162.0"
+  }
+}
