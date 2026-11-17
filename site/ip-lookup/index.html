@@ -28,10 +28,12 @@
         <div class="eyebrow" id="result-version"></div><h2 class="result-ip" id="result-ip"></h2>
         <dl id="details" class="facts"></dl>
         <p class="footnote" id="detail-source"></p>
-      </section>
-      <section class="panel diagnostics" id="lookup-signals" hidden>
-        <h2>Tín hiệu và uy tín IP</h2><dl class="signals" id="signals"></dl>
-        <p class="footnote" id="signal-note"></p><dl class="signals reputation" id="reputation" hidden></dl>
+        <div class="diagnostics">
+          <h2>Phân loại kết nối</h2>
+          <dl class="facts classification" id="signals"></dl>
+          <p class="footnote" id="signal-note"></p>
+          <dl class="signals reputation" id="reputation" hidden></dl>
+        </div>
       </section>
       <section class="panel map-panel" id="map-panel" hidden>
         <div class="section-top"><h2>Bản đồ vị trí ước tính</h2><button id="show-map" class="minor" type="button">Hiển thị bản đồ</button></div>
@@ -41,7 +43,7 @@
         <div class="section-top"><h2 id="sources-title">Đối chiếu nguồn dữ liệu</h2><span id="sources-count"></span></div>
         <p class="footnote">Các nguồn có thể trả về vị trí khác nhau do cách xác định và thời điểm cập nhật dữ liệu.</p>
         <div class="table-shell" tabindex="0" role="region" aria-label="Bảng đối chiếu nguồn dữ liệu"><table>
-          <thead><tr><th scope="col">Nguồn</th><th scope="col">Vị trí</th><th scope="col">ISP / Tổ chức</th><th scope="col">ASN</th></tr></thead><tbody id="sources"></tbody>
+          <thead><tr><th scope="col">Nguồn</th><th scope="col">Vị trí</th><th scope="col">ISP/Organization</th></tr></thead><tbody id="sources"></tbody>
         </table></div>
       </section>
     </div>

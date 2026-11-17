@@ -54,8 +54,8 @@ dl { margin: 0; }
 dd { margin: 0; overflow-wrap: anywhere; }
 .signals div { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: .88rem; }
 .signals dt, .footnote, .section-top > span { color: var(--muted); }
-.signals dd[data-state=true] { color: #ffca8f; }
-.signals dd[data-state=false] { color: var(--accent); }
+.signals dd[data-state=true], .classification dd[data-state=true] { color: #ffca8f; }
+.signals dd[data-state=false], .classification dd[data-state=false] { color: var(--accent); }
 .footnote { margin: 12px 0 0; font-size: .82rem; line-height: 1.55; }
 .search { margin: 24px 0; }
 .search label { display: block; margin-bottom: 8px; font-weight: 650; }

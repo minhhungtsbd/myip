@@ -225,7 +225,6 @@ function showSources(sources) {
     if (source.status === 'ok') locationCell.append(placeLabel(source, formatLocation(source)));
     else locationCell.textContent = source.reason === 'rate_limit' ? 'Nguồn đang giới hạn lượt tra cứu' : 'Tạm không có kết quả';
     row.insertCell().textContent = value(source.organization);
-    row.insertCell().textContent = value(formatAsn(source.asn));
   }
 }
 
@@ -251,10 +250,7 @@ async function lookupPage() {
   byId('result-ip').textContent = result.ip;
   byId('sources-count').textContent = available.length + '/' + geo.length + ' nguồn có kết quả';
   showSources(geo);
-  if (result.sources.some(source => source.status === 'ok')) {
-    renderSignals(result.sources);
-    byId('lookup-signals').hidden = false;
-  }
+  renderSignals(result.sources);
   if (available.length) {
     const main = available.find(source => source.city && source.latitude !== undefined && source.longitude !== undefined) || available[0];
     fillList('details', [
