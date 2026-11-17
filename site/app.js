@@ -123,7 +123,9 @@ function showSources(sources) {
     link.target = '_blank';
     link.textContent = source.name;
     row.insertCell().append(link);
-    row.insertCell().textContent = source.status === 'ok' ? value(formatLocation(source)) : 'Tạm không có kết quả';
+    const locationCell = row.insertCell();
+    locationCell.textContent = source.status === 'ok' ? value(formatLocation(source))
+      : source.reason === 'rate_limit' ? 'Nguồn đang giới hạn lượt tra cứu' : 'Tạm không có kết quả';
     row.insertCell().textContent = value(source.organization);
     row.insertCell().textContent = value(formatAsn(source.asn));
   }

@@ -25,6 +25,7 @@ export async function onRequest({ request, env, waitUntil }) {
   const ip = version === 6 ? new URL('https://[' + input + ']/').hostname.slice(1, -1) : input;
   const cacheUrl = new URL('/api/lookup', url.origin);
   cacheUrl.searchParams.set('ip', ip);
+  cacheUrl.searchParams.set('schema', '1');
   const cached = await caches.default.match(cacheUrl);
   if (cached) return json(await cached.json());
   const sources = await lookup(ip, env);
