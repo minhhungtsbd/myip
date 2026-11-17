@@ -29,6 +29,7 @@
       </article>
       <article class="panel"><div class="eyebrow">TÍN HIỆU IP</div><h2>Phân loại kết nối</h2>
         <dl id="signals" class="signals"></dl><p class="footnote" id="signal-note">Đang tải dữ liệu phân loại…</p>
+        <dl id="reputation" class="signals reputation" hidden></dl>
       </article>
     </section>
     <form class="search" action="/ip-lookup/" method="get"><label for="query">Tra cứu IP khác</label><div class="search-row">
@@ -38,7 +39,12 @@
     <section aria-labelledby="network-title"><div class="section-top"><h2 id="network-title">Chi tiết kết nối</h2><span>Dữ liệu từ Cloudflare và trình duyệt</span></div>
       <dl class="facts" id="network"></dl>
     </section>
+    <section class="panel diagnostics" aria-labelledby="diagnostics-title">
+      <div class="section-top"><h2 id="diagnostics-title">Kiểm tra WebRTC</h2><button class="minor" id="run-webrtc">Chạy kiểm tra</button></div>
+      <p class="footnote">Dùng máy chủ STUN của Google để kiểm tra xem việc gọi trực tiếp từ trình duyệt có lộ IP khác với IP hiển thị ở trên hay không.</p>
+      <p class="status" id="webrtc-status" role="status"></p>
+    </section>
   </main>
-  <footer class="wrap site-footer"><span>Cloudmini MyIP</span><span>Tiện ích miễn phí từ <a href="https://cloudmini.net/">Cloudmini</a> · <a href="https://cloudmini.net/price/">VPS</a> · <a href="https://cloudmini.net/proxy/">Proxy</a></span></footer>
+  <footer class="wrap site-footer"><span>Cloudmini MyIP · Dữ liệu IP từ <a href="https://www.ip2location.io/">IP2Location.io</a></span><span>Tiện ích miễn phí từ <a href="https://cloudmini.net/">Cloudmini</a> · <a href="https://cloudmini.net/price/">VPS</a> · <a href="https://cloudmini.net/proxy/">Proxy</a></span></footer>
 </body>
 </html>

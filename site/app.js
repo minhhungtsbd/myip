@@ -1,10 +1,21 @@
+import { flagCodes } from './flag-codes.js';
+
 const byId = id => document.getElementById(id);
 const countries = new Intl.DisplayNames(['vi'], { type: 'region' });
+const englishCountries = new Intl.DisplayNames(['en'], { type: 'region' });
+const supportedCodes = new Set(flagCodes.filter(code => code !== 'XX' && code !== 'ZZ'));
+const codeByName = new Map([...supportedCodes].map(code => [englishCountries.of(code).toUpperCase(), code]));
+for (const [name, code] of Object.entries({
+  'UNITED STATES OF AMERICA': 'US', 'VIET NAM': 'VN', 'RUSSIAN FEDERATION': 'RU',
+  'CZECH REPUBLIC': 'CZ', 'REPUBLIC OF KOREA': 'KR', 'KOREA, REPUBLIC OF': 'KR'
+})) codeByName.set(name, code);
 const value = input => input === undefined || input === null || input === '' ? 'Chưa có dữ liệu' : String(input);
-const countryName = data => {
-  const code = data.countryCode || data.country;
-  return /^[A-Z]{2}$/.test(code || '') ? countries.of(code) : data.country || code;
-};
+function countryCode(data) {
+  const input = (data.countryCode || data.country || '').trim().toUpperCase();
+  const code = input === 'UK' ? 'GB' : input;
+  return supportedCodes.has(code) ? code : codeByName.get((data.country || '').trim().toUpperCase()) || '';
+}
+const countryName = data => countryCode(data) ? countries.of(countryCode(data)) : data.country;
 const formatLocation = data => [data.city, data.region, countryName(data)]
   .filter((part, index, parts) => part && parts.indexOf(part) === index).join(', ');
 const formatAsn = asn => asn ? 'AS' + String(asn).replace(/^AS/i, '') : '';
@@ -17,6 +28,22 @@ async function request(path) {
   return data;
 }
 
+function placeLabel(data, text) {
+  const label = document.createElement('span');
+  const code = countryCode(data);
+  if (code) {
+    const flag = document.createElement('img');
+    flag.className = 'flag';
+    flag.src = '/flags/' + code.toLowerCase() + '.svg';
+    flag.alt = '';
+    flag.addEventListener('error', () => flag.remove(), { once: true });
+    label.className = 'with-flag';
+    label.append(flag);
+  }
+  label.append(value(text));
+  return label;
+}
+
 function fillList(target, pairs) {
   const container = byId(target);
   container.replaceChildren();
@@ -25,7 +52,7 @@ function fillList(target, pairs) {
     const term = document.createElement('dt');
     const answer = document.createElement('dd');
     term.textContent = label;
-    answer.textContent = value(data);
+    answer.append(data instanceof Node ? data : value(data));
     if (typeof state === 'boolean') answer.dataset.state = state;
     row.append(term, answer);
     container.append(row);
@@ -42,11 +69,83 @@ function signals(sources) {
   });
 }
 
+function renderSignals(sources) {
+  fillList('signals', signals(sources));
+  const names = sources.filter(source => signalFields.some(([, field]) => typeof source[field] === 'boolean'))
+    .map(source => source.name);
+  byId('signal-note').textContent = names.length ? 'Nguồn: ' + names.join(', ') : 'Các nguồn hiện chưa trả dữ liệu phân loại.';
+  const scores = [];
+  for (const source of sources) {
+    if (Number.isFinite(source.abuseScore)) {
+      const reports = Number.isFinite(source.reports) ? ' · ' + source.reports + ' báo cáo trong 90 ngày' : '';
+      scores.push(['AbuseIPDB', source.abuseScore + '/100' + reports]);
+    }
+    if (Number.isFinite(source.fraudScore)) scores.push(['Rủi ro IP theo Scamalytics', source.fraudScore + '/100']);
+  }
+  if (scores.length) {
+    fillList('reputation', scores);
+    byId('reputation').hidden = false;
+  }
+}
+
+function setupWebRtc(baseIp) {
+  const button = byId('run-webrtc');
+  const status = byId('webrtc-status');
+  button.addEventListener('click', async () => {
+    if (!window.RTCPeerConnection) {
+      status.textContent = 'Trình duyệt không hỗ trợ WebRTC.';
+      return;
+    }
+    button.disabled = true;
+    status.textContent = 'Đang thu thập địa chỉ từ STUN…';
+    let peer;
+    let timer;
+    try {
+      peer = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+      const publicIps = new Set();
+      const done = new Promise(resolve => {
+        timer = setTimeout(resolve, 4500);
+        peer.addEventListener('icecandidate', ({ candidate }) => {
+          if (!candidate) resolve();
+          else if (candidate.type === 'srflx' && candidate.address) publicIps.add(candidate.address);
+        });
+      });
+      peer.createDataChannel('ip-check');
+      await peer.setLocalDescription(await peer.createOffer());
+      await done;
+      const canonical = ip => ip.includes(':') ? new URL('https://[' + ip + ']/').hostname : ip;
+      const comparable = baseIp ? [...publicIps].filter(ip => ip.includes(':') === baseIp.includes(':')) : [];
+      const differing = comparable.some(ip => canonical(ip) !== canonical(baseIp));
+      let explanation = 'Không thu được IP công khai từ STUN. Kết quả này chưa đủ để xác định rò rỉ.';
+      if (publicIps.size) {
+        explanation = differing ? 'STUN thấy IP khác với kết nối web: '
+          : comparable.length ? 'IP cùng phiên bản khớp với kết nối web: ' : 'Địa chỉ STUN (khác phiên bản IP kết nối web): ';
+        explanation += [...publicIps].join(', ');
+      }
+      status.textContent = explanation;
+    } catch {
+      status.textContent = 'Không thể hoàn tất kiểm tra WebRTC trên trình duyệt này.';
+    } finally {
+      clearTimeout(timer);
+      peer?.close();
+      button.disabled = false;
+    }
+  });
+}
+
 async function home() {
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const browser = navigator.userAgentData?.brands?.filter(item => /Chrom|Edge|Opera|Firefox/i.test(item.brand))
-    .at(-1)?.brand || navigator.userAgent.match(/(Edg|Firefox|Chrome|Version)\//)?.[1] || 'Trình duyệt web';
-  const browserLabel = ({ Edg: 'Microsoft Edge', Version: 'Safari' })[browser] || browser;
+  const agent = navigator.userAgent;
+  const browsers = [['Microsoft Edge', /Edg(?:A|iOS)?\/(\d+)/], ['Opera', /OPR\/(\d+)/],
+    ['Firefox', /(?:Firefox|FxiOS)\/(\d+)/], ['Chrome', /(?:Chrome|CriOS)\/(\d+)/], ['Safari', /Version\/(\d+)/]];
+  const browserLabel = browsers.map(([name, pattern]) => {
+    const version = agent.match(pattern)?.[1];
+    return version ? name + ' ' + version : '';
+  }).find(Boolean) || 'Trình duyệt web';
+  const platform = navigator.userAgentData?.platform || [
+    ['Android', /Android/], ['iOS', /iPhone|iPad/], ['Windows', /Windows/],
+    ['ChromeOS', /CrOS/], ['macOS', /Macintosh/], ['Linux', /Linux/]
+  ].find(([, pattern]) => pattern.test(agent))?.[0];
   let connection;
   try {
     connection = await request('/api/me');
@@ -55,11 +154,13 @@ async function home() {
     byId('current-location').textContent = 'Chưa đọc được IP công khai. Hãy tải lại trang.';
   }
   const data = connection || {};
+  setupWebRtc(data.ip);
   fillList('network', [
-    ['Quốc gia', countryName(data)], ['Khu vực / Thành phố', [data.region, data.city].filter(Boolean).join(' · ')],
+    ['Quốc gia', placeLabel(data, countryName(data))], ['Khu vực / Thành phố', [data.region, data.city].filter(Boolean).join(' · ')],
     ['ISP / Tổ chức', data.organization], ['ASN', formatAsn(data.asn)],
     ['Múi giờ theo IP', data.timezone], ['Múi giờ trình duyệt', timezone],
-    ['Trình duyệt', browserLabel], ['Ngôn ngữ trình duyệt', navigator.language]
+    ['Trình duyệt', browserLabel], ['Hệ điều hành', platform], ['Ngôn ngữ trình duyệt', navigator.language],
+    ['Điểm kết nối Cloudflare', data.colo]
   ]);
   fillList('signals', signals([]));
   if (!connection) {
@@ -69,7 +170,7 @@ async function home() {
   byId('current-ip').textContent = data.ip;
   byId('version').textContent = 'IPv' + data.version;
   byId('version').hidden = false;
-  byId('current-location').textContent = formatLocation(data) || 'Chưa có dữ liệu vị trí';
+  byId('current-location').replaceChildren(placeLabel(data, formatLocation(data)));
   byId('compare').href = lookupPath(data.ip);
   const copy = byId('copy');
   copy.disabled = false;
@@ -83,10 +184,7 @@ async function home() {
   });
   try {
     const result = await request('/api/lookup?ip=' + encodeURIComponent(data.ip));
-    fillList('signals', signals(result.sources));
-    const names = result.sources.filter(source => signalFields.some(([, field]) => typeof source[field] === 'boolean'))
-      .map(source => source.name);
-    byId('signal-note').textContent = names.length ? 'Nguồn: ' + names.join(', ') : 'Các nguồn hiện chưa trả dữ liệu phân loại.';
+    renderSignals(result.sources);
   } catch {
     byId('signal-note').textContent = 'Chưa tải được tín hiệu kết nối.';
   }
@@ -124,8 +222,8 @@ function showSources(sources) {
     link.textContent = source.name;
     row.insertCell().append(link);
     const locationCell = row.insertCell();
-    locationCell.textContent = source.status === 'ok' ? value(formatLocation(source))
-      : source.reason === 'rate_limit' ? 'Nguồn đang giới hạn lượt tra cứu' : 'Tạm không có kết quả';
+    if (source.status === 'ok') locationCell.append(placeLabel(source, formatLocation(source)));
+    else locationCell.textContent = source.reason === 'rate_limit' ? 'Nguồn đang giới hạn lượt tra cứu' : 'Tạm không có kết quả';
     row.insertCell().textContent = value(source.organization);
     row.insertCell().textContent = value(formatAsn(source.asn));
   }
@@ -147,15 +245,20 @@ async function lookupPage() {
   let result;
   try { result = await request('/api/lookup?ip=' + encodeURIComponent(query)); }
   catch (error) { status.textContent = error.message; return; }
-  const available = result.sources.filter(source => source.status === 'ok');
+  const geo = result.sources.filter(source => source.kind !== 'reputation');
+  const available = geo.filter(source => source.status === 'ok');
   byId('result-version').textContent = 'ĐỊA CHỈ IPv' + result.version;
   byId('result-ip').textContent = result.ip;
-  byId('sources-count').textContent = available.length + '/' + result.sources.length + ' nguồn có kết quả';
-  showSources(result.sources);
+  byId('sources-count').textContent = available.length + '/' + geo.length + ' nguồn có kết quả';
+  showSources(geo);
+  if (result.sources.some(source => source.status === 'ok')) {
+    renderSignals(result.sources);
+    byId('lookup-signals').hidden = false;
+  }
   if (available.length) {
     const main = available.find(source => source.city && source.latitude !== undefined && source.longitude !== undefined) || available[0];
     fillList('details', [
-      ['Quốc gia', countryName(main)], ['Khu vực', main.region], ['Thành phố', main.city],
+      ['Quốc gia', placeLabel(main, countryName(main))], ['Khu vực', main.region], ['Thành phố', main.city],
       ['ISP / Tổ chức', main.organization], ['ASN', formatAsn(main.asn)], ['Loại mạng', main.network],
       ['Múi giờ', main.timezone], ['Mã bưu chính', main.postal]
     ]);

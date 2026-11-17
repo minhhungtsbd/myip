@@ -2,5 +2,8 @@
   "name": "cloudmini-myip",
   "pages_build_output_dir": "./site",
   "compatibility_date": "2026-11-17",
-  "compatibility_flags": ["nodejs_compat"]
+  "compatibility_flags": ["nodejs_compat"],
+  "services": [
+    {"binding": "LOOKUP_GUARD", "service": "cloudmini-myip-lookup-guard"}
+  ]
 }

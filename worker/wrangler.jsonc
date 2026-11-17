@@ -1,0 +1,10 @@
+{
+  "name": "cloudmini-myip-lookup-guard",
+  "main": "guard.js",
+  "compatibility_date": "2026-11-17",
+  "workers_dev": false,
+  "preview_urls": false,
+  "ratelimits": [
+    {"name": "LOOKUP_LIMIT", "namespace_id": "27101", "simple": {"limit": 15, "period": 60}}
+  ]
+}

@@ -1,5 +1,5 @@
 import { isIP } from 'node:net';
-import { lookup } from '../../lib/providers.js';
+import { lookup, providerCacheVariant } from '../../lib/providers.js';
 
 const json = (data, status = 200) => Response.json(data, {
   status,
@@ -25,9 +25,17 @@ export async function onRequest({ request, env, waitUntil }) {
   const ip = version === 6 ? new URL('https://[' + input + ']/').hostname.slice(1, -1) : input;
   const cacheUrl = new URL('/api/lookup', url.origin);
   cacheUrl.searchParams.set('ip', ip);
-  cacheUrl.searchParams.set('schema', '1');
+  cacheUrl.searchParams.set('schema', '2-' + providerCacheVariant(env));
   const cached = await caches.default.match(cacheUrl);
   if (cached) return json(await cached.json());
+  const visitor = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const guard = await env.LOOKUP_GUARD?.fetch('https://lookup-guard.internal/', {
+    headers: { 'X-Visitor-IP': visitor }
+  }).catch(() => null);
+  if (guard?.status === 429) return json({ error: 'Bạn đã tra cứu quá nhiều IP. Vui lòng thử lại sau một phút.' }, 429);
+  if (guard?.status !== 204) {
+    return json({ error: 'Dịch vụ tra cứu đang bận. Vui lòng thử lại sau.' }, 503);
+  }
   const sources = await lookup(ip, env);
   const available = sources.filter(source => source.status === 'ok');
   const data = { ip, version, sources };
