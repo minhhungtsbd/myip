@@ -2,4 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://myip.cloudmini.net/</loc></url>
   <url><loc>https://myip.cloudmini.net/ip-lookup/</loc></url>
+  <url><loc>https://myip.cloudmini.net/dns-leak/</loc></url>
+  <url><loc>https://myip.cloudmini.net/proxy-check/</loc></url>
 </urlset>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Xem các máy chủ DNS thực sự xử lý truy vấn từ trình duyệt của bạn.">
+  <title>DNS Leak Test | Cloudmini MyIP</title>
+  <link rel="canonical" href="https://myip.cloudmini.net/dns-leak/">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/dns-leak/dns.js"></script>
+</head>
+<body>
+<header class="site-bar"><div class="wrap nav">
+  <a class="brand" href="/" aria-label="Cloudmini MyIP"><img class="brand-mark" src="/favicon.svg" alt="" width="36" height="36"><span class="brand-wordmark">MyIP <span class="brand-product">Cloudmini</span></span></a>
+  <nav aria-label="Điều hướng"><a href="/">IP của tôi</a><a href="/ip-lookup/">Tra cứu IP</a><a href="/dns-leak/" aria-current="page">DNS Leak</a><a href="/proxy-check/">Proxy Checker</a></nav>
+</div></header>
+<main class="wrap">
+  <div class="intro"><h1>DNS Leak Test</h1><p>Xem các máy chủ DNS thực sự xử lý truy vấn từ trình duyệt của bạn.</p></div>
+  <section class="panel">
+    <p>Phép đo gửi các truy vấn thử tới <a href="https://dnsleak.dev/">dnsleak.dev</a> để ghi nhận resolver. Hãy đối chiếu kết quả với nhà cung cấp DNS hoặc VPN bạn đã chọn.</p>
+    <button id="run-dns" class="primary" type="button">Chạy kiểm tra DNS</button>
+    <p id="dns-status" class="status" role="status"></p>
+    <div id="dns-results" hidden>
+      <div class="table-shell" role="region" tabindex="0" aria-label="Máy chủ DNS phát hiện được">
+        <table><thead><tr><th scope="col">IP resolver</th><th scope="col">Nhà cung cấp</th><th scope="col">Vị trí ước tính</th></tr></thead><tbody id="dns-rows"></tbody></table>
+      </div>
+      <p class="footnote">Một nhà cung cấp có thể dùng nhiều IP resolver. Kết quả phản ánh trình duyệt trong lần đo này.</p>
+    </div>
+  </section>
+</main>
+</body>
+</html>

@@ -1,4 +1,5 @@
 import { isIP } from 'node:net';
+import { dnsLeak } from '../../lib/dns-leak.js';
 import { lookup, providerCacheVariant } from '../../lib/providers.js';
 
 const json = (data, status = 200) => Response.json(data, {
@@ -7,8 +8,11 @@ const json = (data, status = 200) => Response.json(data, {
 });
 
 export async function onRequest({ request, env, waitUntil }) {
-  if (request.method !== 'GET') return json({ error: 'Chỉ hỗ trợ GET.' }, 405);
   const url = new URL(request.url);
+  if (url.pathname === '/api/dns-leak/start' || /^\/api\/dns-leak\/result\/[^/]+$/.test(url.pathname)) {
+    return dnsLeak(request, env, url.pathname, json);
+  }
+  if (request.method !== 'GET') return json({ error: 'Chỉ hỗ trợ GET.' }, 405);
   if (url.pathname === '/api/health') return json({ ok: true });
   if (url.pathname === '/api/me') {
     const ip = request.headers.get('CF-Connecting-IP');
